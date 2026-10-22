@@ -1,0 +1,274 @@
+================================================================================
+                  LIBRARY MANAGEMENT SYSTEM - QUERY EXECUTION OUTPUT
+================================================================================
+
+
+################################################################################
+>>> TASK QUERY 1: Display all student details
+################################################################################
+SQL:
+SELECT 
+    student_id,
+    CONCAT(first_name, ' ', last_name) AS full_name,
+    email,
+    phone,
+    department,
+    enrollment_year
+FROM Students
+ORDER BY student_id ASC;
+
+OUTPUT:
++------------+--------------+--------------------------+------------+------------------------+-----------------+
+| student_id | full_name    | email                    | phone      | department             | enrollment_year |
++------------+--------------+--------------------------+------------+------------------------+-----------------+
+|          1 | Aarav Sharma | aarav.sharma@example.edu | 9876543210 | Computer Science       |            2023 |
+|          2 | Priya Patel  | priya.patel@example.edu  | 9876543211 | Information Technology |            2022 |
+|          3 | Rohan Verma  | rohan.verma@example.edu  | 9876543212 | Electronics & Comm     |            2023 |
+|          4 | Ananya Gupta | ananya.gupta@example.edu | 9876543213 | Computer Science       |            2021 |
+|          5 | Vikram Singh | vikram.singh@example.edu | 9876543214 | Mechanical Eng         |            2024 |
+|          6 | Sneha Reddy  | sneha.reddy@example.edu  | 9876543215 | Information Technology |            2022 |
++------------+--------------+--------------------------+------------+------------------------+-----------------+
+(6 row(s) returned)
+
+
+
+################################################################################
+>>> TASK QUERY 2: Display available books (available_copies > 0)
+################################################################################
+SQL:
+SELECT 
+    book_id,
+    isbn,
+    title,
+    author,
+    category,
+    total_copies,
+    available_copies
+FROM Books
+WHERE available_copies > 0
+ORDER BY category, title;
+
+OUTPUT:
++---------+----------------+---------------------------------------------------+----------------------+----------------------+--------------+------------------+
+| book_id | isbn           | title                                             | author               | category             | total_copies | available_copies |
++---------+----------------+---------------------------------------------------+----------------------+----------------------+--------------+------------------+
+|       7 | 978-0136042594 | Artificial Intelligence: A Modern Approach        | Stuart Russell       | AI & ML              |            4 |                3 |
+|       3 | 978-0262033848 | Introduction to Algorithms                        | Thomas H. Cormen     | Algorithms           |            6 |                4 |
+|      12 | 978-0128000564 | Digital Design and Computer Architecture          | David Harris         | Architecture         |            3 |                3 |
+|      11 | 978-0321486813 | Compilers: Principles, Techniques, and Tools      | Alfred V. Aho        | Compiler Design      |            2 |                2 |
+|       9 | 978-0132847377 | Data Structures and Algorithm Analysis in C++     | Mark Allen Weiss     | Data Structures      |            5 |                4 |
+|       1 | 978-0078022159 | Database System Concepts                          | Abraham Silberschatz | Database             |            5 |                3 |
+|       2 | 978-0133970777 | Fundamentals of Database Systems                  | Ramez Elmasri        | Database             |            4 |                3 |
+|       6 | 978-0130661029 | Computer Networks                                 | Andrew S. Tanenbaum  | Networking           |            3 |                2 |
+|       5 | 978-1119800361 | Operating System Concepts                         | Abraham Silberschatz | Operating Systems    |            4 |                2 |
+|       4 | 978-0132350884 | Clean Code                                        | Robert C. Martin     | Software Engineering |            5 |                5 |
+|      10 | 978-0201633610 | Design Patterns: Elements of Reusable OO Software | Erich Gamma          | Software Engineering |            3 |                2 |
+|       8 | 978-0201616224 | The Pragmatic Programmer                          | Andrew Hunt          | Software Engineering |            3 |                3 |
++---------+----------------+---------------------------------------------------+----------------------+----------------------+--------------+------------------+
+(12 row(s) returned)
+
+
+
+################################################################################
+>>> TASK QUERY 3: Display books issued to a particular student (Student ID = 1: Aarav Sharma)
+################################################################################
+SQL:
+SELECT 
+    s.student_id,
+    CONCAT(s.first_name, ' ', s.last_name) AS student_name,
+    s.department,
+    b.title AS book_title,
+    b.author,
+    bi.issue_date,
+    bi.due_date,
+    bi.return_date,
+    bi.status AS loan_status,
+    bi.fine_amount
+FROM Book_Issue bi
+INNER JOIN Students s ON bi.student_id = s.student_id
+INNER JOIN Books b ON bi.book_id = b.book_id
+WHERE s.student_id = 1
+ORDER BY bi.issue_date DESC;
+
+OUTPUT:
++------------+--------------+------------------+--------------------------+----------------------+------------+------------+-------------+-------------+-------------+
+| student_id | student_name | department       | book_title               | author               | issue_date | due_date   | return_date | loan_status | fine_amount |
++------------+--------------+------------------+--------------------------+----------------------+------------+------------+-------------+-------------+-------------+
+|          1 | Aarav Sharma | Computer Science | Computer Networks        | Andrew S. Tanenbaum  | 2026-10-12 | 2026-10-26 | NULL        | Issued      |         0.0 |
+|          1 | Aarav Sharma | Computer Science | Database System Concepts | Abraham Silberschatz | 2026-10-10 | 2026-10-24 | NULL        | Issued      |         0.0 |
+|          1 | Aarav Sharma | Computer Science | Database System Concepts | Abraham Silberschatz | 2026-09-01 | 2026-09-15 | 2026-09-14  | Returned    |         0.0 |
++------------+--------------+------------------+--------------------------+----------------------+------------+------------+-------------+-------------+-------------+
+(3 row(s) returned)
+
+
+
+################################################################################
+>>> TASK QUERY 4: Display all students and books borrowed (LEFT JOIN including unborrowed)
+################################################################################
+SQL:
+SELECT 
+    s.student_id,
+    CONCAT(s.first_name, ' ', s.last_name) AS student_name,
+    s.department,
+    COALESCE(b.title, 'No Books Issued') AS issued_book,
+    COALESCE(bi.status, 'None') AS status,
+    bi.due_date
+FROM Students s
+LEFT JOIN Book_Issue bi ON s.student_id = bi.student_id
+LEFT JOIN Books b ON bi.book_id = b.book_id
+ORDER BY s.student_id;
+
+OUTPUT:
++------------+--------------+------------------------+---------------------------------------------------+----------+------------+
+| student_id | student_name | department             | issued_book                                       | status   | due_date   |
++------------+--------------+------------------------+---------------------------------------------------+----------+------------+
+|          1 | Aarav Sharma | Computer Science       | Database System Concepts                          | Returned | 2026-09-15 |
+|          1 | Aarav Sharma | Computer Science       | Database System Concepts                          | Issued   | 2026-10-24 |
+|          1 | Aarav Sharma | Computer Science       | Computer Networks                                 | Issued   | 2026-10-26 |
+|          2 | Priya Patel  | Information Technology | Operating System Concepts                         | Returned | 2026-09-19 |
+|          2 | Priya Patel  | Information Technology | Operating System Concepts                         | Issued   | 2026-10-22 |
+|          3 | Rohan Verma  | Electronics & Comm     | Introduction to Algorithms                        | Returned | 2026-09-24 |
+|          4 | Ananya Gupta | Computer Science       | Data Structures and Algorithm Analysis in C++     | Returned | 2026-09-26 |
+|          4 | Ananya Gupta | Computer Science       | Design Patterns: Elements of Reusable OO Software | Overdue  | 2026-10-04 |
+|          5 | Vikram Singh | Mechanical Eng         | No Books Issued                                   | None     | NULL       |
+|          6 | Sneha Reddy  | Information Technology | No Books Issued                                   | None     | NULL       |
++------------+--------------+------------------------+---------------------------------------------------+----------+------------+
+(10 row(s) returned)
+
+
+
+################################################################################
+>>> TASK QUERY 5: Aggregate Query - Inventory breakdown by category
+################################################################################
+SQL:
+SELECT 
+    category,
+    COUNT(book_id) AS unique_titles,
+    SUM(total_copies) AS total_inventory,
+    SUM(available_copies) AS available_copies,
+    (SUM(total_copies) - SUM(available_copies)) AS currently_loaned
+FROM Books
+GROUP BY category
+ORDER BY total_inventory DESC;
+
+OUTPUT:
++----------------------+---------------+-----------------+------------------+------------------+
+| category             | unique_titles | total_inventory | available_copies | currently_loaned |
++----------------------+---------------+-----------------+------------------+------------------+
+| Software Engineering |             3 |              11 |               10 |                1 |
+| Database             |             2 |               9 |                6 |                3 |
+| Algorithms           |             1 |               6 |                4 |                2 |
+| Data Structures      |             1 |               5 |                4 |                1 |
+| Operating Systems    |             1 |               4 |                2 |                2 |
+| AI & ML              |             1 |               4 |                3 |                1 |
+| Networking           |             1 |               3 |                2 |                1 |
+| Architecture         |             1 |               3 |                3 |                0 |
+| Compiler Design      |             1 |               2 |                2 |                0 |
++----------------------+---------------+-----------------+------------------+------------------+
+(9 row(s) returned)
+
+
+
+################################################################################
+>>> TASK QUERY 6: Aggregate Query - Overall Library Executive Summary
+################################################################################
+SQL:
+SELECT 
+    (SELECT COUNT(*) FROM Students) AS total_students,
+    (SELECT COUNT(*) FROM Books) AS total_book_titles,
+    (SELECT SUM(total_copies) FROM Books) AS total_volume_copies,
+    (SELECT SUM(available_copies) FROM Books) AS available_on_shelves,
+    (SELECT COUNT(*) FROM Book_Issue WHERE status IN ('Issued', 'Overdue')) AS active_loans,
+    (SELECT SUM(fine_amount) FROM Book_Issue) AS total_fines_collected;
+
+OUTPUT:
++----------------+-------------------+---------------------+----------------------+--------------+-----------------------+
+| total_students | total_book_titles | total_volume_copies | available_on_shelves | active_loans | total_fines_collected |
++----------------+-------------------+---------------------+----------------------+--------------+-----------------------+
+|              6 |                12 |                  47 |                   36 |            4 |                 120.0 |
++----------------+-------------------+---------------------+----------------------+--------------+-----------------------+
+(1 row(s) returned)
+
+
+
+################################################################################
+>>> TASK QUERY 7: Aggregate Query with HAVING - Most active borrowers (>= 2 issues)
+################################################################################
+SQL:
+SELECT 
+    s.student_id,
+    CONCAT(s.first_name, ' ', s.last_name) AS student_name,
+    s.department,
+    COUNT(bi.issue_id) AS total_borrow_transactions
+FROM Students s
+INNER JOIN Book_Issue bi ON s.student_id = bi.student_id
+GROUP BY s.student_id, s.first_name, s.last_name, s.department
+HAVING COUNT(bi.issue_id) >= 2
+ORDER BY total_borrow_transactions DESC;
+
+OUTPUT:
++------------+--------------+------------------------+---------------------------+
+| student_id | student_name | department             | total_borrow_transactions |
++------------+--------------+------------------------+---------------------------+
+|          1 | Aarav Sharma | Computer Science       |                         3 |
+|          2 | Priya Patel  | Information Technology |                         2 |
+|          4 | Ananya Gupta | Computer Science       |                         2 |
++------------+--------------+------------------------+---------------------------+
+(3 row(s) returned)
+
+
+
+################################################################################
+>>> TASK QUERY 8: Overdue Books and Fine Summary
+################################################################################
+SQL:
+SELECT 
+    bi.issue_id,
+    CONCAT(s.first_name, ' ', s.last_name) AS student_name,
+    s.phone,
+    b.title AS book_title,
+    bi.issue_date,
+    bi.due_date,
+    bi.status,
+    bi.fine_amount
+FROM Book_Issue bi
+INNER JOIN Students s ON bi.student_id = s.student_id
+INNER JOIN Books b ON bi.book_id = b.book_id
+WHERE bi.status = 'Overdue' OR bi.fine_amount > 0
+ORDER BY bi.fine_amount DESC;
+
+OUTPUT:
++----------+--------------+------------+---------------------------------------------------+------------+------------+----------+-------------+
+| issue_id | student_name | phone      | book_title                                        | issue_date | due_date   | status   | fine_amount |
++----------+--------------+------------+---------------------------------------------------+------------+------------+----------+-------------+
+|        8 | Ananya Gupta | 9876543213 | Design Patterns: Elements of Reusable OO Software | 2026-09-20 | 2026-10-04 | Overdue  |        90.0 |
+|        2 | Priya Patel  | 9876543211 | Operating System Concepts                         | 2026-09-05 | 2026-09-19 | Returned |        30.0 |
++----------+--------------+------------+---------------------------------------------------+------------+------------+----------+-------------+
+(2 row(s) returned)
+
+
+
+################################################################################
+>>> DATA MANIPULATION DEMO: Return book (Student 1 returns Book 6: Computer Networks)
+################################################################################
+SQL:
+SELECT 'Before Return' AS state, book_id, title, available_copies FROM Books WHERE book_id = 6;
+
+OUTPUT:
++---------------+---------+-------------------+------------------+
+| state         | book_id | title             | available_copies |
++---------------+---------+-------------------+------------------+
+| Before Return |       6 | Computer Networks |                2 |
++---------------+---------+-------------------+------------------+
+(1 row(s) returned)
+
+
+
+################################################################################
+>>> EXECUTING DML OPERATION: UPDATE Books (Increment available copies upon return)
+################################################################################
++--------------+---------+-------------------+------------------+
+| state        | book_id | title             | available_copies |
++--------------+---------+-------------------+------------------+
+| After Return |       6 | Computer Networks |                3 |
++--------------+---------+-------------------+------------------+

@@ -1,0 +1,48 @@
+ PPF WEEK 9 (MINI PROJECT)
+
+PPF Activity: DBMS Mini Project – Library Management System
+Assessment Method: Mini Project 
+Mode: Individual
+Submission: GitHub Repository
+Duration: 1 Weeks
+Problem Statement:
+Develop a Library Management System using SQL to manage student information, books, book issue records, and book return records. The system should demonstrate database design, primary and foreign keys, constraints, SQL queries, aggregate functions, joins, and basic data manipulation operations.
+TASK TO BE PERFORM 
+Create a database named LibraryDB.
+Create tables for Students, Books, and Book_Issue.
+Insert at least 5 student records and 10 book records.
+Write SQL queries to display available books and student details.
+Write a query to display books issued to a particular student.
+Explain how the database could be connected to a website.
+Explain how a distributed database could support libraries at different campus locations.
+Deliverables
+SQL file containing table creation, sample data, and queries.
+Screenshots of query execution and output.
+Short report explaining the database concepts used.
+GitHub repository link containing the project files
+
+Assessment Rubric – 20 Marks
+
+1
+Database Design and Table Creation
+4
+2
+SQL Queries and Data Manipulation
+4
+3
+Implementation and Working Output
+4
+4
+Project Report and Screenshots
+2
+5
+GitHub Repository and Code Submission
+1
+6
+Viva / Project Presentation
+5
+
+
+Total
+20
+
